@@ -2,10 +2,10 @@
 :- use_module(library(pce_style_item)).
 
 inicio :-
-    new(Menu, dialog('Proyect SDM version Alienigena 1.3', size(1000, 800))),
+    new(Menu, dialog('Proyect Doctor', size(1000, 800))),
     new(L, label(nombre, 'SISTEMA DE DIAGNOSTICO MEDICO')),
-    new(A, label(nombre, 'hecho por Cristian Arreola 12041540')),
-    new(@texto, label(nombre, 'responde un breve cuestionario para su diagnostico')),
+    new(A, label(nombre, 'realizado en Mexico Mazatlan')),
+    new(@texto, label(nombre, 'Responde el siguiente cuestinario')),
     new(@respl, label(nombre, '')),
     new(Salir, button('SALIR', and(message(Menu, destroy), message(Menu, free)))),
     new(@boton, button('Realizar test', message(@prolog, iniciar_test))),
@@ -13,7 +13,7 @@ inicio :-
     send(Menu, append(L)),
     send(Menu, display, L, point(125, 20)),
     send(Menu, display, A, point(80, 360)),
-    send(Menu, display, @boton, point(400, 400)), % Mover el botón "Realizar test"
+    send(Menu, display, @boton, point(400, 400)),
     send(Menu, display, @texto, point(20, 100)),
     send(Menu, display, Salir, point(20, 400)),
     send(Menu, display, @respl, point(20, 130)),
@@ -90,7 +90,7 @@ formulación del interferón alfa, el interferón alfa pegilado,
 cuya eficacia en combinación con ribavirina es aún mayor.
 ') :- hepatitisc, !.
 
-fallas('Sin resultados, usted no dio la información necesaria o suficiente.
+fallas('Sin resultados, no se alcanzo a concluir una enfermedad con seguridad.
 ERROR p560c4!').
 
 paperas :- spaperas,
