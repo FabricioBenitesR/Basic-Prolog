@@ -1,7 +1,6 @@
 :- use_module(library(pce)).
 :- use_module(library(pce_style_item)).
 
-% Inicialización del menú principal
 inicio :-
     new(Menu, dialog('Proyect SDM version Alienigena 1.3', size(1000, 800))),
     new(L, label(nombre, 'SISTEMA DE DIAGNOSTICO MEDICO')),
@@ -14,13 +13,12 @@ inicio :-
     send(Menu, append(L)),
     send(Menu, display, L, point(125, 20)),
     send(Menu, display, A, point(80, 360)),
+    send(Menu, display, @boton, point(400, 400)), % Mover el botón "Realizar test"
     send(Menu, display, @texto, point(20, 100)),
     send(Menu, display, Salir, point(20, 400)),
-    send(Menu, display, @boton, point(120, 400)),
     send(Menu, display, @respl, point(20, 130)),
     send(Menu, open_centered).
 
-% Tratamientos para distintas enfermedades
 fallas('USTED PADECE PAPERAS:
 TRATAMIENTO:
 Aplicar compresas frías o calientes en la zona del cuello.
@@ -95,7 +93,6 @@ cuya eficacia en combinación con ribavirina es aún mayor.
 fallas('Sin resultados, usted no dio la información necesaria o suficiente.
 ERROR p560c4!').
 
-% Definición de síntomas para cada enfermedad
 paperas :- spaperas,
     pregunta('¿Tienes fiebre?'),
     pregunta('¿Tienes pérdida de apetito?'),
@@ -157,7 +154,6 @@ hepatitisc :- shepatitisc,
     pregunta('¿Tienes hinchazón en piernas y abdomen?'),
     pregunta('¿Tienes orina oscura?').
 
-% Preguntas específicas de síntomas iniciales para cada enfermedad
 spaperas :- pregunta('¿Malestar general?'), !.
 svaricela :- pregunta('¿Tienes erupciones en la piel?'), !.
 ssarampion :- pregunta('¿Tienes ojos llorosos?'), !.
@@ -167,10 +163,8 @@ sinfluenza :- pregunta('¿Tienes dolor muscular?'), !.
 shepatitisb :- pregunta('¿Tienes náuseas?'), !.
 shepatitisc :- pregunta('¿Tienes hematomas?'), !.
 
-% Predicados dinámicos para almacenar respuestas
 :- dynamic si/1, no/1.
 
-% Preguntar al usuario y registrar la respuesta
 preguntar(Problema) :-
     new(Di, dialog('Diagnostico medico')),
     new(L2, label(texto, 'Responde las siguientes preguntas')),
@@ -178,31 +172,32 @@ preguntar(Problema) :-
     new(B1, button(si, and(message(Di, return, si)))),
     new(B2, button(no, and(message(Di, return, no)))),
 
-    send(Di, append, L2),
-    send(Di, append, La),
-    send(Di, append, B1),
-    send(Di, append, B2),
+    send(Di, append(L2)),
+    send(Di, append(La)),
+    send(Di, append(B1)),
+    send(Di, append(B2)),
+
     send(Di, default_button, si),
     send(Di, open_centered),
     get(Di, confirm, Answer),
+    write(Answer),
+    nl,
     send(Di, destroy),
-    ((Answer == si) -> assert(si(Problema)) ; assert(no(Problema)), fail).
+    ((Answer == si) -> assert(si(Problema)); assert(no(Problema)), fail).
 
-% Pregunta inicial
-pregunta(S) :- preguntar(S).
-pregunta(S) :- \+ si(S).
+pregunta(S) :- (si(S) -> true; (no(S) -> fail; preguntar(S))).
 
-% Limpiar respuestas anteriores
-limpiar :-
-    retractall(si(_)),
-    retractall(no(_)).
+limpiar :- retract(si(_)), fail.
+limpiar :- retract(no(_)), fail.
+limpiar.
 
-% Iniciar el test
 iniciar_test :-
+    write('Botón presionado'), nl,
     limpiar,
-    fallas(Diagnostico),
-    send(@respl, selection(Diagnostico)).
+    fallas(Falla),
+    send(@texto, selection(' ')),
+    send(@respl, selection(Falla)),
+    write('Procedimiento completado'), nl,
+    limpiar.
 
-% Hechos dinámicos para preguntas
-:- dynamic spaperas/0, svaricela/0, ssarampion/0, sanemia/0, sresfriado/0, sinfluenza/0, shepatitisb/0, shepatitisc/0.
-
+lim :- send(@respl, selection('')).
